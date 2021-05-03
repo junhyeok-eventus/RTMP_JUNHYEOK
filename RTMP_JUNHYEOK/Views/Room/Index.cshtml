@@ -1,0 +1,52 @@
+﻿@model IEnumerable<RTMP_JUNHYEOK.Models.Room>
+@using RTMP_JUNHYEOK.Models;
+@{
+    var loginUser = (User)Session["loginUser"];
+}
+
+<h2>채팅방 목록</h2>
+
+<p>
+    @Html.ActionLink("방 만들기", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            방 번호
+        </th>
+        <th>
+            방 제목
+        </th>
+        <th>
+            현재 인원 / 전체 인원
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.User.name)
+            </td>
+            <td>
+                @(item.user_count + " / " + item.user_limit)
+            </td>
+            <td>
+                @if (loginUser != null && item.user_count < item.user_limit)
+                {
+                    @Html.ActionLink("입장하기", "Details", new { id = item.Id })
+                }
+                @if (loginUser != null && item.User.Id == loginUser.Id)
+                {
+                    @Html.Raw(" | ")
+                    @Html.ActionLink("삭제하기", "Delete", new { id = item.Id })
+                }
+            </td>
+        </tr>
+    }
+
+</table>

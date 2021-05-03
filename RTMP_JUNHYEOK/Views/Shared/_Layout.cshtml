@@ -1,0 +1,104 @@
+﻿@using RTMP_JUNHYEOK.Models;
+@using System.Collections;
+@{
+    var loginUser = (User)Session["loginUser"];
+    string type = "", msg = "", action = "";
+    if (ViewBag.msg != null)
+    {
+        Hashtable ht = (Hashtable)ViewBag.msg;
+        type = (string)ht["type"];
+        msg = (string)ht["msg"];
+        action = (string)ht["action"];
+    }
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RTMP 구현 과제 - 유준혁</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/Scripts/jquery.signalR-2.4.1.js")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+
+    <!--출처: https://wooncloud.tistory.com/14 [Wooncloud - 뭉실뭉실 운구름 블로그]-->
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                @Html.ActionLink("RTMP 구현", "Index", "Room", new { area = "" }, new { @class = "navbar-brand" })
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink("채팅 홈", "Index", "Room")</li>
+                    @if (loginUser != null && loginUser.name == "admin")
+                    {
+                        <li>@Html.ActionLink("유저", "Index", "User")</li>
+                        <li>@Html.ActionLink("메세지", "Index", "Message")</li>
+                    }
+                    <li>@Html.ActionLink("입장 기록", "Index", "EnterHistories")</li>
+                </ul>
+                <div class="navbar-collapse pull-right">
+                    @if (loginUser == null)
+                    {
+                        @Html.ActionLink("로그인", "Login", "Home")
+                    }
+                    else
+                    {
+                        @Html.ActionLink(loginUser.name + "님 로그아웃", "Logout", "Home")
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.ToString("yyyy-MM-dd") / 이벤터스 RTMP 유준혁 과제</p>
+        </footer>
+    </div>
+</body>
+</html>
+<script>
+    if (toastr) {
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": true,
+            "positionClass": "toast-top-center",
+            "preventDuplicates": false,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        }
+    }
+
+    $(document).ready(function () {
+        var msg = '@msg', action = '@action';
+        if (msg && action) {
+            toastr["@type"](msg, action);
+        }
+    });
+</script>

@@ -1,0 +1,42 @@
+﻿@model IEnumerable<RTMP_JUNHYEOK.Models.EnterHistory>
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>입장 내역</h2>
+
+<table class="table">
+    <tr>
+        <th>
+            user 님이
+        </th>
+        <th>
+            x 번 방에
+        </th>
+        <th>
+            time 시에
+        </th>
+        <th>
+            enter 했습니다.
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @item.User.name
+        </td>
+        <td>
+            @item.Room.Id
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.created_at)
+        </td>
+        <td>
+            @(item.enter ? "입장" : "퇴장")
+        </td>
+    </tr>
+}
+
+</table>

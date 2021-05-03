@@ -1,0 +1,66 @@
+﻿@model RTMP_JUNHYEOK.Models.Message
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>메세지 상세</h2>
+
+<div>
+    <h4>Message</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => "작성자")
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.User.name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => "방 번호")
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Room.Id)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => "내용")
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.content)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.content)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.content)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.time)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.time)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => "삭제 여부")
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.delete.Value ? "O" : "X")
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

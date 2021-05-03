@@ -1,0 +1,105 @@
+﻿@model RTMP_JUNHYEOK.Models.Room
+@using RTMP_JUNHYEOK.Models;
+@{
+    var loginUser = Session["loginUser"] as User;
+}
+<style>
+    #chat_logs {
+        overflow-y: auto;
+        height: 700px;
+        border: 1px solid #808080;
+        border-radius: 10px;
+        padding: 20px;
+    }
+
+    .text-red {
+        color: red;
+        text-decoration-line: line-through;
+    }
+</style>
+<div id="chat_cont">
+    <h2>@Model.User.name 님의 채팅방</h2>
+    <input type="button" v-on:click="leaveRoom" class="btn btn-danger" value="방 나가기" />
+    <hr />
+    <div class="container">
+        <div id="chat_logs">
+            @*foreach (var msg in messages)
+                {
+                    <div>
+                        <strong>@msg.User.name</strong> &nbsp; : &nbsp;&nbsp; @msg.content
+                    </div>
+                }
+            *@
+            <div v-for="msg in messages">
+                <strong>{{ msg.name }}</strong> &nbsp; : &nbsp;&nbsp;
+                <span class="text-red" v-if="msg.delete">삭제된 메세지 입니다.</span>
+                <span v-if="!msg.delete">{{ msg.content }}</span>
+            </div>
+        </div>
+        <hr />
+        <input v-model="message" v-on:keyup.enter="sendMessage" style="width: 50%; max-width: 50%; height:35px;" placeholder="바르고 고운 말을 쓰도록 합시당" />
+        <input type="button" id="sendmessage" v-on:click="sendMessage" class="btn btn-primary" value="전송" />
+    </div>
+</div>
+<script src="/signalr/hubs"></script>
+<script type="text/javascript">
+    $(function () {
+        // Declare a proxy to reference the hub.
+        var chat = $.connection.chatHub;
+        var room_id = @Model.Id, user_name = "@loginUser.name", user_id = @loginUser.Id;
+        var scrollBottom = function () {
+            $("#chat_logs").scrollTop($("#chat_logs").height() + 1000);
+            console.log("scroll to bottom");
+        }
+        var app = new Vue({
+            el: "#chat_cont",
+            data: {
+                message: '',
+                messages: []
+            },
+            methods: {
+                sendMessage: function () {
+                    var msg = this.message, self = this;
+                    if (!msg) return;
+                    chat.server.sendGroup(room_id, user_id, msg).done(function () {
+                        console.log("sendGroup done : " + room_id + ", " + user_id + ", " + $("#message").val());
+                        self.message = '';
+                        scrollBottom();
+                    });
+                },
+                leaveRoom: function () {
+                    console.log("leave Room");
+                    chat.connection.disconnected("/Room/Index");
+                }
+            },
+            mounted: function () {
+                var self = this;
+                $.connection.hub.start().done(function () {
+                    // 방 입장
+                    chat.server.joinRoom(user_id, room_id).done(function () {
+                        console.log("join room is done");
+                        chat.server.getData(room_id).always(function (messages) {
+                            self.messages = messages;
+                            scrollBottom();
+                        });
+                    });
+                });
+            },
+            beforeMount: function () {
+                var self = this;
+                // 메세지 수신
+                chat.client.broadcastMessage = function (message) {
+                    self.messages.push(message);
+                    console.log("broadcast message push");
+                    scrollBottom();
+                };
+
+                // 연결 끊기
+                chat.connection.disconnected = function (url) {
+                    chat.server.leaveRoom(user_id, room_id);
+                    location.href = url;
+                }
+            }
+        });
+    });
+</script>
