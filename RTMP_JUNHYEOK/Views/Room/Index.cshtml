@@ -1,7 +1,8 @@
 ﻿@model IEnumerable<RTMP_JUNHYEOK.Models.Room>
 @using RTMP_JUNHYEOK.Models;
 @{
-    var loginUser = (User)Session["loginUser"];
+    var loginUser = Session["loginUser"] as User;
+    var room_dict = ViewBag.room_dict as Dictionary<int, bool>;
 }
 
 <h2>채팅방 목록</h2>
@@ -25,6 +26,7 @@
 
     @foreach (var item in Model)
     {
+        ;
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Id)
@@ -36,7 +38,7 @@
                 @(item.user_count + " / " + item.user_limit)
             </td>
             <td>
-                @if (loginUser != null && item.user_count < item.user_limit)
+                @if (loginUser != null && ((item.user_count < item.user_limit) || (room_dict.TryGetValue(item.Id, out bool isEnter) && isEnter)))
                 {
                     @Html.ActionLink("입장하기", "Details", new { id = item.Id })
                 }

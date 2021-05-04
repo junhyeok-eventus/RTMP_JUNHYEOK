@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
@@ -20,7 +21,23 @@ namespace RTMP_JUNHYEOK.Controllers
         {
             Hashtable ht = util.getMsgTable(type, msg, action);
             if (ht.Count > 0) ViewBag.msg = ht;
+            User user = Session["loginUser"] as User;
+            // 방 번호, 가장 최근 기록 (입장/퇴장)
+            Dictionary<int, bool> dict = new Dictionary<int, bool>();
 
+            if (user != null)
+            {
+                // 로그인 유저의 입장 기록
+                IEnumerable<IGrouping<int, EnterHistory>> groups = db.EnterHistory.Where(a => a.user_id == user.Id).GroupBy(a => a.room_id).ToList();
+
+                foreach (var group in groups)
+                {
+                    if (dict.ContainsKey(group.Key)) continue;
+                    dict.Add(group.Key, group.Last().enter);
+                }
+            }
+
+            ViewBag.room_dict = dict;
             return View(db.Room.OrderByDescending(a => new { a.user_count, a.created_at }).ToList());
         }
 
