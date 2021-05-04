@@ -31,6 +31,11 @@
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
 
     <!--출처: https://wooncloud.tistory.com/14 [Wooncloud - 뭉실뭉실 운구름 블로그]-->
+    <style>
+        .navbar-right > li > a {
+            color: #337ab7 !important;
+        }
+    </style>
 </head>
 <body>
     <div class="navbar navbar-inverse navbar-fixed-top">
@@ -53,16 +58,16 @@
                     }
                     <li>@Html.ActionLink("입장 기록", "Index", "EnterHistories")</li>
                 </ul>
-                <div class="navbar-collapse pull-right">
+                <ul class="nav navbar-nav navbar-right">
                     @if (loginUser == null)
                     {
-                        @Html.ActionLink("로그인", "Login", "Home")
+                        <li>@Html.ActionLink("로그인", "Login", "Home")</li>
                     }
                     else
                     {
-                        @Html.ActionLink(loginUser.name + "님 로그아웃", "Logout", "Home")
+                        <li>@Html.ActionLink(loginUser.name + "님 로그아웃", "Logout", "Home")</li>
                     }
-                </div>
+                </ul>
             </div>
         </div>
     </div>
