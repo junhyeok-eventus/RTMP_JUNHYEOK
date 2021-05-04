@@ -17,7 +17,7 @@ namespace RTMP_JUNHYEOK.Controllers
         // GET: EnterHistories
         public ActionResult Index()
         {
-            var enterHistory = db.EnterHistory.Include(e => e.Room).Include(e => e.User);
+            var enterHistory = db.EnterHistory.Include(e => e.Room).Include(e => e.User).OrderByDescending(a => a.created_at);
             return View(enterHistory.ToList());
         }
 
